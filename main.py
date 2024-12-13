@@ -1,7 +1,9 @@
 import modules as auto
+import file_working
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 import time
+import json
 
 # Первая функция START
 def start_B8():
@@ -27,26 +29,14 @@ def stop_B8():
     auto.move_away(800, 600)
     auto.activate_login_window(31, 35, 54, 92)
 
-# Чтение расписания из файла
-def read_schedule():
-    schedule = {}
-    try:
-        with open("schedule.txt", "r") as file:
-            for line in file:
-                task, time_value = line.strip().split(": ")
-                schedule[task] = [int(x) for x in time_value.split(":")]
-    except Exception as e:
-        print(f"Ошибка при чтении файла: {e}")
-    return schedule
-
-
 # Настраиваем планировщик
 scheduler = BackgroundScheduler()
 
 
 # Функция для обновления заданий в планировщике
 def update_jobs():
-    schedule = read_schedule()
+    # Чтение расписания из файла:
+    schedule = file_working.read_schedule()
 
     # Удаляем существующие задания
     scheduler.remove_all_jobs()
