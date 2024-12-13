@@ -1,3 +1,5 @@
+import json
+
 def read_schedule():
     schedule = {}
     try:
@@ -21,3 +23,7 @@ def read_schedule():
         print(f"Ошибка при чтении файла: {e}")
 
     return schedule
+
+if __name__ == "__main__":
+    schedule = read_schedule()
+    print(schedule)

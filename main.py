@@ -41,28 +41,36 @@ def update_jobs():
     # Удаляем существующие задания
     scheduler.remove_all_jobs()
 
-    # Добавляем новые задания из файла
-    if "Active" in schedule:
+    # Добавляем новые задания на основе расписания
+    for day, data in schedule.items():
+        if data == "off":
+            print(f"{day}: Вентсистема выключена на весь день.")
+            continue
+
+        active_time = list(map(int, data["active"].split(':')))
+        inactive_time = list(map(int, data["inactive"].split(':')))
+
+        # Задание на включение системы
         scheduler.add_job(
             start_B8,
             'cron',
-            day_of_week='mon-fri',
-            hour=schedule["Active"][0],
-            minute=schedule["Active"][1],
-            second=schedule["Active"][2],
+            day_of_week=day,
+            hour=active_time[0],
+            minute=active_time[1],
+            second=0,
         )
-        print(f"Добавлено задание start_B8: {schedule['Active']}")
+        print(f"Добавлено задание start_B8 для {day}: {data['active']}")
 
-    if "Inactive" in schedule:
+        # Задание на выключение системы
         scheduler.add_job(
             stop_B8,
             'cron',
-            day_of_week='mon-fri',
-            hour=schedule["Inactive"][0],
-            minute=schedule["Inactive"][1],
-            second=schedule["Inactive"][2],
+            day_of_week=day,
+            hour=inactive_time[0],
+            minute=inactive_time[1],
+            second=0,
         )
-        print(f"Добавлено задание stop_B8: {schedule['Inactive']}")
+        print(f"Добавлено задание stop_B8 для {day}: {data['inactive']}")
 
 
 # Первоначальная настройка заданий
@@ -75,7 +83,7 @@ print("Планировщик запущен. Ожидание...")
 try:
     # Поддерживаем работу программы
     while True:
-        time.sleep(360)  # Проверяем расписание каждые 60 секунд
+        time.sleep(2)  # Проверяем расписание каждые 5 минут
         update_jobs()  # Обновляем задания, если файл изменился
 except (KeyboardInterrupt, SystemExit):
     # Корректная остановка планировщика
