@@ -1,11 +1,11 @@
-import pickle
+import json
 
 def read_schedule():
     schedule = {}
     try:
-        # Открываем бинарный файл sch.dat для чтения
-        with open("sch.dat", "rb") as file:
-            schedule = pickle.load(file)  # Загружаем данные из бинарного файла
+        # Открываем файл sch.json для чтения
+        with open("sch.json", "r") as file:
+            schedule = json.load(file)  # Загружаем данные из JSON файла
 
             # Проверяем, что формат расписания соответствует ожиданиям
             for day, data in schedule.items():
@@ -16,14 +16,13 @@ def read_schedule():
                     raise ValueError(f"Некорректное значение для дня {day}: ожидается 'off' или объект с расписанием.")
 
     except FileNotFoundError:
-        print("Ошибка: файл sch.dat не найден.")
-    except pickle.UnpicklingError:
-        print("Ошибка: некорректный формат данных в sch.dat.")
+        print("Ошибка: файл sch.json не найден.")
+    except json.JSONDecodeError:
+        print("Ошибка: некорректный JSON в sch.json.")
     except Exception as e:
         print(f"Ошибка при чтении файла: {e}")
 
     return schedule
-
 
 if __name__ == "__main__":
     schedule = read_schedule()
